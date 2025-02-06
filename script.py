@@ -10,6 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
 from functools import wraps
 from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 # Ensure SSL is properly loaded in case of any environment-specific issues
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -120,10 +121,12 @@ def setup_browser():
     options = webdriver.ChromeOptions()
     #options.add_argument('--start-maximized')
     options.add_argument(r'--headless=new') # If you want to hide the automated Chrome window
+    options.add_argument(r"--no-sandbox")
+    options.add_argument(r"--disable-dev-shm-usage")
     options.add_argument(r"--disable-blink-features=AutomationControlled") # Avoid detection as bot
     options.add_argument(r"--user-data-dir=/Users/mac/Library/Application Support/Google/Chrome/Default") 
     options.add_argument(r'--profile-directory=Default') 
-    service_path = Service(executable_path=r'/Applications/Google Chrome.app/Contents/MacOS/chromedriver')
+    service_path = Service(ChromeDriverManager().install())#Service(executable_path=r'/Applications/Google Chrome.app/Contents/MacOS/chromedriver')
     browser = webdriver.Chrome(service=service_path, options=options)
     time.sleep(sleep_time)
 
