@@ -105,34 +105,35 @@ def close_banner(func):
 def setup_browser():
     """Setup Chrome browser for Selenium on Streamlit Cloud."""
 
-    # Install Google Chrome (if not installed)
+    # ✅ 1. Install Google Chrome if not already installed
     chrome_path = "/usr/bin/google-chrome"
     if not os.path.exists(chrome_path):
-        st.write("Installing Google Chrome...")
-        subprocess.run("wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True)
-        subprocess.run("sudo dpkg -i google-chrome-stable_current_amd64.deb", shell=True)
+        subprocess.run("wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True)
+        subprocess.run("sudo dpkg -i google-chrome.deb", shell=True)
         subprocess.run("sudo apt-get install -f -y", shell=True)
-
-    # Manually install ChromeDriver
+    
+    # ✅ 2. Install ChromeDriver manually
     chromedriver_path = "/usr/bin/chromedriver"
     if not os.path.exists(chromedriver_path):
-        st.write("Installing ChromeDriver...")
-        subprocess.run("wget -q https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True)
-        subprocess.run("unzip chromedriver_linux64.zip", shell=True)
+        subprocess.run("wget -q -O chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True)
+        subprocess.run("unzip chromedriver.zip", shell=True)
         subprocess.run("sudo mv chromedriver /usr/bin/chromedriver", shell=True)
         subprocess.run("sudo chmod +x /usr/bin/chromedriver", shell=True)
 
-    # Set Chrome options
+    # ✅ 3. Set Chrome options (Ensure compatibility)
     options = webdriver.ChromeOptions()
     options.binary_location = chrome_path
     options.add_argument("--headless")  # Required for Streamlit Cloud
     options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-dev-shm-usage")  # Prevent memory issues
+    options.add_argument("--remote-debugging-port=9222")  # Debugging port for WebDriver
+    options.add_argument("--disable-gpu")  # Fixes rendering issues
+    options.add_argument("--disable-software-rasterizer")  # Prevents crashes
 
-    # Set ChromeDriver service path
+    # ✅ 4. Set ChromeDriver service path
     service = Service(chromedriver_path)
 
-    # Start the browser
+    # ✅ 5. Start the browser
     browser = webdriver.Chrome(service=service, options=options)
 
     # Enter a word to start session
