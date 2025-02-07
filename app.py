@@ -28,53 +28,55 @@ class StreamlitLogger:
         else:
             self.output_container.text_area("Log Output:", "\n".join(self.log_lines), height=250)
 
-def save_uploaded_file(uploaded_file):
-    """Save the uploaded file to a temporary directory."""
-    save_path = os.path.join("temp", uploaded_file.name)
-    os.makedirs("temp", exist_ok=True)
-    with open(save_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
-    return save_path
-
-def process_keywords_from_xlsx(file_path):
+def process_keywords_from_xlsx(file):
     """Read and process keywords from an uploaded Excel file without headers."""
     try:
-        df = pd.ExcelFile(file_path)
-        return df
+        xls = pd.ExcelFile(file, engine='openpyxl')
+        return xls
     except Exception as e:
-        st.error("Error processing the file. Ensure it is a valid XLSX file.")
+        st.error(f"Error processing the file: {e}")
         return None
 
 # Streamlit UI
-st.title("📂 Upload Excel File and Start Keywords Download Automation")
+st.title("\U0001F4C2 Upload Excel File and Start Automated Keywords Download")
 
 uploaded_file = st.file_uploader("Upload an XLSX file with keywords", type=["xlsx"])
 
 if uploaded_file:
-    file_path = save_uploaded_file(uploaded_file)
-    df = process_keywords_from_xlsx(file_path)
+    df = process_keywords_from_xlsx(uploaded_file)
     
     if df:
         st.success("File uploaded successfully!")
-        st.subheader("📄 Detected Sheets")
+        st.subheader("\U0001F4C4 Detected Sheets")
         
-        # Display sheets in a more readable format
+        # Display available sheets
         for i, sheet in enumerate(df.sheet_names, start=1):
             st.write(f"**Sheet #{i}: {sheet}**")
         
-        # Option to display sheet contents without headers
+        # Select a sheet to display contents
         selected_sheet = st.selectbox("Select a sheet to view contents:", df.sheet_names)
         if selected_sheet:
-            st.dataframe(df.parse(selected_sheet, header=None).rename(columns={0: 'Keyword'}).head(5))
-    
-    logger = StreamlitLogger()  # Create an instance of the logger
-    
-    if st.button("Start Processing"):
-        st.write("Running script...")
+            sheet_data = df.parse(selected_sheet, header=None)
+            sheet_data = sheet_data.rename(columns={0: 'Keyword'})  # Rename first column
+            st.dataframe(sheet_data.head(5))
+            
+        # Read keywords from two specific sheets if they exist
+        keys_msk = []
+        keys_spb = []
+        if 'MSK' in df.sheet_names and not df.parse('MSK', header=None).empty:
+            keys_msk = df.parse('MSK', header=None).iloc[:, 0].dropna().tolist()
         
-        # Redirect print statements to be displayed below the button
-        sys.stdout = logger
+        if 'SPB' in df.sheet_names and not df.parse('SPB', header=None).empty:
+            keys_spb = df.parse('SPB', header=None).iloc[:, 0].dropna().tolist()
         
-        main()  # Calls the main function from the existing script
+        # Log detected keywords count
+        st.write(f"Detected {len(keys_msk)} keywords in MSK sheet.")
+        st.write(f"Detected {len(keys_spb)} keywords in SPB sheet.")
         
-        st.success("Processing completed!")
+        logger = StreamlitLogger()
+        
+        if st.button("Start Processing"):
+            st.write("Running script...")
+            sys.stdout = logger  # Redirect print statements
+            main(keys_msk, keys_spb)  # Call the main function from the existing script
+            st.success("Processing completed!")
