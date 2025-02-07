@@ -25,28 +25,12 @@ sleep_time = 2
 global_inception_time = time.time()
 
 # Upload keywords from a xlsx file in the Wordstat folder (create one in the default downloads folder)
-try:
-    keys_msk = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='MSK', header=None)
-    keys_msk = keys_msk.values.flatten().tolist()
-    print("Wordstat Keys MSK uploaded")
-    keys_spb = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='SPB', header=None)
-    keys_spb = keys_spb.values.flatten().tolist()
-    print("Wordstat Keys SPB uploaded")
-# or enter them manually
-except Exception as e:
-    keys_msk = [
-        "Used cars",
-        "dwdqwfwedsvds",
-        "Cars",
-        "Best car prices",
-        # Add more keywords as needed...
-    ]
-    keys_spb = [
-        "Used cars",
-        "Cars",
-        "Best car prices",
-        # Add more keywords as needed...
-    ]
+#keys_msk = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='MSK', header=None)
+#keys_msk = keys_msk.values.flatten().tolist()
+#print("Wordstat Keys MSK uploaded")
+#keys_spb = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='SPB', header=None)
+#keys_spb = keys_spb.values.flatten().tolist()
+#print("Wordstat Keys SPB uploaded")
 
 def timer(func):
     """Calculate time taken by a function to execute and also time elapsed since the session's inception"""
@@ -240,8 +224,7 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
             print(f"{round((i + 1) / len(keywords) * 100, 2)}% completed for {region_name}")
     return region_data
 
-@timer
-def main():
+def main(keys_msk, keys_spb):
     browser = setup_browser()
 
     # In case you want to login manually
@@ -272,9 +255,12 @@ def main():
     }
 
     # Process region and save data locally
-    msk_data = process_region(browser, keys_msk, msk_actions, msk_actions_alternative, region_1)
-    if not msk_data.empty:
-        msk_data.to_csv(f"{directory_processed}Wordstat_msk.csv", sep=";", index=False, encoding='utf-8-sig')
+    if len(keys_msk) > 0:
+        msk_data = process_region(browser, keys_msk, msk_actions, msk_actions_alternative, region_1)
+        if not msk_data.empty:
+            msk_data.to_csv(f"{directory_processed}Wordstat_msk.csv", sep=";", index=False, encoding='utf-8-sig')
+    else:
+        print("No data for Moscow and region")
 
     region_2 = "Saint Petersburg and region"
     # Define actions to chosee region
@@ -305,9 +291,12 @@ def main():
     }
     
     # Process region and save data locally
-    spb_data = process_region(browser, keys_spb, spb_actions, spb_actions_alternative, region_2)
-    if not spb_data.empty:
-        spb_data.to_csv(f"{directory_processed}Wordstat_spb.csv", sep=";", index=False, encoding='utf-8-sig')
+    if len(keys_spb) > 0:
+        spb_data = process_region(browser, keys_spb, spb_actions, spb_actions_alternative, region_2)
+        if not spb_data.empty:
+            spb_data.to_csv(f"{directory_processed}Wordstat_spb.csv", sep=";", index=False, encoding='utf-8-sig')
+    else:
+        print("No data for Saint Petersburg and region")
 
     print("Sessions are completed.")
     time.sleep(sleep_time)
