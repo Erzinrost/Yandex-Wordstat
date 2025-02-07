@@ -11,6 +11,8 @@ from selenium.common.exceptions import TimeoutException
 from functools import wraps
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+import subprocess
+import streamlit as st
 
 # Ensure SSL is properly loaded in case of any environment-specific issues
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -101,20 +103,40 @@ def close_banner(func):
     return wrapper
 
 def setup_browser():
-    """Initialize and return a browser instance. Then launch a session"""
+    """Setup Chrome browser for Selenium on Streamlit Cloud."""
+
+    # Install Google Chrome (if not installed)
+    chrome_path = "/usr/bin/google-chrome"
+    if not os.path.exists(chrome_path):
+        st.write("Installing Google Chrome...")
+        subprocess.run("wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True)
+        subprocess.run("sudo dpkg -i google-chrome-stable_current_amd64.deb", shell=True)
+        subprocess.run("sudo apt-get install -f -y", shell=True)
+
+    # Manually install ChromeDriver
+    chromedriver_path = "/usr/bin/chromedriver"
+    if not os.path.exists(chromedriver_path):
+        st.write("Installing ChromeDriver...")
+        subprocess.run("wget -q https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True)
+        subprocess.run("unzip chromedriver_linux64.zip", shell=True)
+        subprocess.run("sudo mv chromedriver /usr/bin/chromedriver", shell=True)
+        subprocess.run("sudo chmod +x /usr/bin/chromedriver", shell=True)
+
+    # Set Chrome options
     options = webdriver.ChromeOptions()
-    #options.add_argument('--start-maximized')
-    options.add_argument(r'--headless=new') # If you want to hide the automated Chrome window
-    options.add_argument(r"--no-sandbox")
-    options.add_argument(r"--disable-dev-shm-usage")
-    options.add_argument(r"--disable-blink-features=AutomationControlled") # Avoid detection as bot
-    options.add_argument(r"--user-data-dir=/Users/mac/Library/Application Support/Google/Chrome/Default") 
-    options.add_argument(r'--profile-directory=Default') 
-    service_path = Service(ChromeDriverManager().install())#Service(executable_path=r'/Applications/Google Chrome.app/Contents/MacOS/chromedriver')
-    browser = webdriver.Chrome(service=service_path, options=options)
-    time.sleep(sleep_time)
+    options.binary_location = chrome_path
+    options.add_argument("--headless")  # Required for Streamlit Cloud
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    # Set ChromeDriver service path
+    service = Service(chromedriver_path)
+
+    # Start the browser
+    browser = webdriver.Chrome(service=service, options=options)
 
     # Enter a word to start session
+    time.sleep(sleep_time)
     browser.get(login_url)
     WebDriverWait(browser, default_wait).until(
         EC.presence_of_element_located((By.CLASS_NAME, "textinput__control"))
