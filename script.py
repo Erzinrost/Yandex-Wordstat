@@ -143,13 +143,14 @@ def login_to_wordstat(browser, login, password):
         time.sleep(sleep_time)
         browser.find_element(By.CLASS_NAME, 'Textinput-Control').send_keys(Keys.ENTER)
         time.sleep(sleep_time)
+        print("Login entered")
         browser.find_element(By.CLASS_NAME, 'Textinput-Control').send_keys(password)
         time.sleep(sleep_time)
         # Here you may have to manually enter additional password from push notification
         try:
             WebDriverWait(browser, default_wait).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "Textinput-Control"))
-            ).send_keys(login)
+            ).send_keys(Keys.ENTER)
         except TimeoutException:
             print("Manual login required.")
             time.sleep(60) # time to enter creneditials
