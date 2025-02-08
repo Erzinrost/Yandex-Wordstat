@@ -12,7 +12,9 @@ from functools import wraps
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import subprocess
+from selenium.webdriver.chrome.options import Options
 import streamlit as st
+from webdriver_manager.core.os_manager import ChromeType
 
 # Ensure SSL is properly loaded in case of any environment-specific issues
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -27,12 +29,12 @@ sleep_time = 2
 global_inception_time = time.time()
 
 # Upload keywords from a xlsx file in the Wordstat folder (create one in the default downloads folder)
-#keys_msk = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='MSK', header=None)
-#keys_msk = keys_msk.values.flatten().tolist()
-#print("Wordstat Keys MSK uploaded")
-#keys_spb = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='SPB', header=None)
-#keys_spb = keys_spb.values.flatten().tolist()
-#print("Wordstat Keys SPB uploaded")
+keys_msk = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='MSK', header=None)
+keys_msk = keys_msk.values.flatten().tolist()
+print("Wordstat Keys MSK uploaded")
+keys_spb = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='SPB', header=None)
+keys_spb = keys_spb.values.flatten().tolist()
+print("Wordstat Keys SPB uploaded")
 
 def timer(func):
     """Calculate time taken by a function to execute and also time elapsed since the session's inception"""
@@ -105,36 +107,19 @@ def close_banner(func):
 def setup_browser():
     """Setup Chrome browser for Selenium on Streamlit Cloud."""
 
-    # ✅ 1. Install Google Chrome if not already installed
-    chrome_path = "/usr/bin/google-chrome"
-    if not os.path.exists(chrome_path):
-        subprocess.run("wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True)
-        subprocess.run("sudo dpkg -i google-chrome.deb", shell=True)
-        subprocess.run("sudo apt-get install -f -y", shell=True)
-    
-    # ✅ 2. Install ChromeDriver manually
-    chromedriver_path = "/usr/bin/chromedriver"
-    if not os.path.exists(chromedriver_path):
-        subprocess.run("wget -q -O chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True)
-        subprocess.run("unzip chromedriver.zip", shell=True)
-        subprocess.run("sudo mv chromedriver /usr/bin/chromedriver", shell=True)
-        subprocess.run("sudo chmod +x /usr/bin/chromedriver", shell=True)
+    def get_driver():
+        return webdriver.Chrome(
+            service=Service(
+                ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+            ),
+            options=options,
+        )
 
-    # ✅ 3. Set Chrome options (Ensure compatibility)
-    options = webdriver.ChromeOptions()
-    options.binary_location = chrome_path
-    options.add_argument("--headless")  # Required for Streamlit Cloud
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")  # Prevent memory issues
-    options.add_argument("--remote-debugging-port=9222")  # Debugging port for WebDriver
-    options.add_argument("--disable-gpu")  # Fixes rendering issues
-    options.add_argument("--disable-software-rasterizer")  # Prevents crashes
+    options = Options()
+    options.add_argument("--disable-gpu")
+    options.add_argument("--headless")
 
-    # ✅ 4. Set ChromeDriver service path
-    service = Service(chromedriver_path)
-
-    # ✅ 5. Start the browser
-    browser = webdriver.Chrome(service=service, options=options)
+    browser = get_driver()
 
     # Enter a word to start session
     time.sleep(sleep_time)
@@ -326,4 +311,4 @@ def main(keys_msk, keys_spb):
     browser.quit()
 
 if __name__ == "__main__":
-    main()
+    main(keys_msk, keys_spb)
