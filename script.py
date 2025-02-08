@@ -28,13 +28,13 @@ default_wait = 10
 sleep_time = 2
 global_inception_time = time.time()
 
-# Upload keywords from a xlsx file in the Wordstat folder (create one in the default downloads folder)
-keys_msk = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='MSK', header=None)
-keys_msk = keys_msk.values.flatten().tolist()
-print("Wordstat Keys MSK uploaded")
-keys_spb = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='SPB', header=None)
-keys_spb = keys_spb.values.flatten().tolist()
-print("Wordstat Keys SPB uploaded")
+# # Upload keywords from a xlsx file in the Wordstat folder (create one in the default downloads folder)
+# keys_msk = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='MSK', header=None)
+# keys_msk = keys_msk.values.flatten().tolist()
+# print("Wordstat Keys MSK uploaded")
+# keys_spb = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='SPB', header=None)
+# keys_spb = keys_spb.values.flatten().tolist()
+# print("Wordstat Keys SPB uploaded")
 
 def timer(func):
     """Calculate time taken by a function to execute and also time elapsed since the session's inception"""
