@@ -117,6 +117,7 @@ def setup_browser():
 
     options = Options()
     options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
     options.add_argument("--headless")
 
     browser = get_driver()
@@ -133,10 +134,9 @@ def setup_browser():
 
     return browser
 
-def login_to_wordstat(browser):
+def login_to_wordstat(browser, login, password):
     """Logs into Wordstat."""
-    login = "YOUR LOGIN"
-    password = "YOUR PASSWORD"
+
     try:
         # Enter login and password
         browser.find_element(By.CLASS_NAME, 'Textinput-Control').send_keys(login)
@@ -232,11 +232,14 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
             print(f"{round((i + 1) / len(keywords) * 100, 2)}% completed for {region_name}")
     return region_data
 
-def main(keys_msk, keys_spb):
+def main(keys_msk, keys_spb, login, password):
     browser = setup_browser()
 
     # In case you want to login manually
-    #login_to_wordstat(browser)
+    try:
+        login_to_wordstat(browser, login, password)
+    except Exception as e:
+        pass
 
     region_1 = "Moscow and region"
     # Define actions to chosee region
@@ -311,4 +314,4 @@ def main(keys_msk, keys_spb):
     browser.quit()
 
 if __name__ == "__main__":
-    main(keys_msk, keys_spb)
+    main(keys_msk, keys_spb, login, password)
