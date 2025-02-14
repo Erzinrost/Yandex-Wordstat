@@ -148,6 +148,7 @@ def login_to_wordstat(browser, login, password):
         time.sleep(sleep_time)
         browser.find_element(By.CLASS_NAME, 'Textinput-Control').send_keys(Keys.ENTER)
         time.sleep(sleep_time)
+        print("Password entered")
     except Exception as e:
         print("Login failed. Please check credentials or website accessibility.", e)
         browser.quit()
