@@ -247,7 +247,7 @@ def main(keys_msk, keys_spb, login, password):
         "Select Moscow and its region": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
             EC.element_to_be_clickable((By.XPATH,"""//*[@id="123"]/ol/li/ol/li[1]/ol/li[1]/ol/li[1]/span/label/span[3]""")))),
         "Confirm selection": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
-            EC.element_to_be_clickable((By.XPATH,"""/html/body/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[4]/button""")))),
+            EC.element_to_be_clickable((By.CLASS_NAME,"""button2__text""")))),
         "Choose dynamics option": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
             EC.element_to_be_clickable((By.XPATH,"""//*[@id="page"]/div/div[2]/div/span/label[2]""")))),
     }
@@ -283,7 +283,7 @@ def main(keys_msk, keys_spb, login, password):
         "Select Saint Petersburg and its region": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
             EC.element_to_be_clickable((By.XPATH,"""//*[@id="123"]/ol/li/ol/li[1]/ol/li[2]/ol/li[1]/span/label/span[3]""")))),
         "Confirm selection": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
-            EC.element_to_be_clickable((By.XPATH,"""/html/body/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[4]/button""")))),
+            EC.element_to_be_clickable((By.CLASS_NAME,"""button2__text""")))),
     }
 
     # Define alternative actions to chosee region 
