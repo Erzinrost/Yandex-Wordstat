@@ -11,7 +11,10 @@ from selenium.common.exceptions import TimeoutException
 from functools import wraps
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+import subprocess
+from selenium.webdriver.chrome.options import Options
 import streamlit as st
+from webdriver_manager.core.os_manager import ChromeType
 
 # Ensure SSL is properly loaded in case of any environment-specific issues
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -21,19 +24,17 @@ directory = os.path.expanduser("~/downloads/")
 directory_processed = directory + "Wordstat/"
 os.makedirs(directory_processed, exist_ok=True)
 login_url = "https://wordstat.yandex.ru/"
-default_wait = 40
+default_wait = 10
 sleep_time = 2
 global_inception_time = time.time()
 
-# Upload keywords from a xlsx file in the Wordstat folder (create one in the default downloads folder)
+# # Upload keywords from a xlsx file in the Wordstat folder (create one in the default downloads folder)
 # keys_msk = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='MSK', header=None)
 # keys_msk = keys_msk.values.flatten().tolist()
 # print("Wordstat Keys MSK uploaded")
 # keys_spb = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='SPB', header=None)
 # keys_spb = keys_spb.values.flatten().tolist()
 # print("Wordstat Keys SPB uploaded")
-# login = "erzinrost123"
-# password = "Winter1237&"
 
 def timer(func):
     """Calculate time taken by a function to execute and also time elapsed since the session's inception"""
@@ -104,24 +105,25 @@ def close_banner(func):
     return wrapper
 
 def setup_browser():
-    """Initialize and return a browser instance. Then launch a session"""
-    options = webdriver.ChromeOptions()
-    #options.add_argument('--start-maximized')
-    #options.add_argument(r'--headless=new') # If you want to hide the automated Chrome window
-    options.add_argument(r"--no-sandbox")
-    options.add_argument(r"--disable-dev-shm-usage")
-    options.add_argument(r"--disable-blink-features=AutomationControlled") # Avoid detection as bot
-    #options.add_argument(r"--user-data-dir=/Users/mac/Library/Application Support/Google/Chrome/Default") 
-    #options.add_argument(r'--profile-directory=Default')
-    options.add_argument("--disable-extensions")
-    options.add_argument("--disable-notifications")
-    options.add_argument("--disable-Advertisement")
-    options.add_argument("--disable-popup-blocking") 
-    service_path = Service(ChromeDriverManager().install())#Service(executable_path=r'/Applications/Google Chrome.app/Contents/MacOS/chromedriver')
-    browser = webdriver.Chrome(service=service_path, options=options)
-    time.sleep(sleep_time)
+    """Setup Chrome browser for Selenium on Streamlit Cloud."""
+
+    def get_driver():
+        return webdriver.Chrome(
+            service=Service(
+                ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+            ),
+            options=options,
+        )
+
+    options = Options()
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--headless")
+
+    browser = get_driver()
 
     # Enter a word to start session
+    time.sleep(sleep_time)
     browser.get(login_url)
     WebDriverWait(browser, default_wait).until(
         EC.presence_of_element_located((By.CLASS_NAME, "textinput__control"))
@@ -132,69 +134,23 @@ def setup_browser():
 
     return browser
 
+def login_to_wordstat(browser, login, password):
+    """Logs into Wordstat."""
 
-def update_variable(new_value):
-    st.session_state.push_code = new_value
-
-
-def enter_push(browser, push_code):
-    "Enter push notification sent by Yandex when logging in"
-    print("Enter push notification")
-    #global push_notification
-    
-    while len(st.session_state.push_code.strip()) != 6:
-        #time.sleep(1)  # Polling for push code update
-        # Initialize session state variables
-        if "push_code" not in st.session_state:
-            st.session_state.push_code = ""
-        #st.session_state.push_code = st.text_input("Enter Push Notification Code", placeholder="Enter the 6-digit code", key=f"push_code_input_{time.time()}")
-        time.sleep(1)
-        push_code = st.write(st.session_state.push_code)
-        print("1", push_code)
-        print("2", st.session_state.push_code)
-    
-    print("Passed11" + str(push_code))
-    print("Passed22" + str(st.session_state.push_code))
-    time.sleep(10)
-    WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Textinput-Control'))).send_keys(push_code)
-    time.sleep(50)
-    # WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Textinput-Control'))).send_keys(Keys.ENTER)
-    # time.sleep(sleep_time)
-    print("Push notification entered")
-
-def login_to_wordstat(browser, login, password, push_code):
-    """Logs into Wordstat with optional push notification."""
     try:
         # Enter login and password
-        WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Textinput-Control'))).send_keys(login)
+        browser.find_element(By.CLASS_NAME, 'Textinput-Control').send_keys(login)
         time.sleep(sleep_time)
-        WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Textinput-Control'))).send_keys(Keys.ENTER)
+        browser.find_element(By.CLASS_NAME, 'Textinput-Control').send_keys(Keys.ENTER)
         time.sleep(sleep_time)
         print("Login entered")
-        # Here you may have to manually enter additional password from push notification
-        #try:
-        WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Textinput-Control'))).send_keys(password)
+        browser.find_element(By.CLASS_NAME, 'Textinput-Control').send_keys(password)
         time.sleep(sleep_time)
-        WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Textinput-Control'))).send_keys(Keys.ENTER)
+        browser.find_element(By.CLASS_NAME, 'Textinput-Control').send_keys(Keys.ENTER)
         time.sleep(sleep_time)
-        print("Password entered")
-            
-        # except:
-        #     try:
-        #         enter_push(browser, push_code)
-        #     except TimeoutException:
-        #         print("Enter creneditials manually")
-        #         time.sleep(60) # time to enter creneditials
-        # enter_push(browser, push_code)
-        # try:
-        #     WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME, "shepherd-cancel-icon"))).click()
-        # except Exception as e:
-        #     pass
-        print("Login success")
-    except TimeoutException:
-        print("Login failed. Please check credentials or website accessibility.")
-        #browser.quit()
-    enter_push(browser, push_code)
+    except Exception as e:
+        print("Login failed. Please check credentials or website accessibility.", e)
+        browser.quit()
 
 def get_latest_file(directory, prefix="wordstat_dynamic"):
     """Uploads the latest file with the specified prefix from a directory
@@ -256,7 +212,6 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
     for key in region_actions.keys():
         try:
             region_actions[key]()
-            time.time(5)
             print(key)
         except Exception as e:
             region_actions_alternative[key]()
@@ -272,12 +227,15 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
             print(f"{round((i + 1) / len(keywords) * 100, 2)}% completed for {region_name}")
     return region_data
 
-def main(keys_msk, keys_spb, login, password, push_code):
+def main(keys_msk, keys_spb, login, password):
     browser = setup_browser()
-    time.sleep(2)
-    # Login manually
-    login_to_wordstat(browser, login, password, push_code)
-    time.sleep(50)
+
+    # In case you want to login manually
+    try:
+        login_to_wordstat(browser, login, password)
+    except Exception as e:
+        pass
+
     region_1 = "Moscow and region"
     # Define actions to chosee region
     msk_actions = {
@@ -288,7 +246,7 @@ def main(keys_msk, keys_spb, login, password, push_code):
         "Select Moscow and its region": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
             EC.element_to_be_clickable((By.XPATH,"""//*[@id="123"]/ol/li/ol/li[1]/ol/li[1]/ol/li[1]/span/label/span[3]""")))),
         "Confirm selection": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
-            EC.element_to_be_clickable((By.CLASS,"""/html/body/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[4]/button""")))),
+            EC.element_to_be_clickable((By.XPATH,"""/html/body/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[4]/button""")))),
         "Choose dynamics option": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
             EC.element_to_be_clickable((By.XPATH,"""//*[@id="page"]/div/div[2]/div/span/label[2]""")))),
     }
@@ -296,7 +254,7 @@ def main(keys_msk, keys_spb, login, password, push_code):
     # in case the first path to click is not accessible
     msk_actions_alternative = {
         "Select region": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="page"]/div/div[2]/div/div[3]/div[1]/div/div[1]/div[2]/div/button/span[1]"""))).click(),
-        "Cancel selection": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/span/label/span[1]"""))).click(),
+        "Cancel selection": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/span/label/span[3]"""))).click(),
         "Select Moscow and its region": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/ol/li[1]/ol/li[1]/ol/li[1]/span/label/span[3]"""))).click(),
         "Confirm selection": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """/html/body/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[4]/button/span"""))).click(),
         "Choose dynamics option": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="page"]/div/div[2]/div/span/label[2]"""))).click(),
@@ -351,4 +309,4 @@ def main(keys_msk, keys_spb, login, password, push_code):
     browser.quit()
 
 if __name__ == "__main__":
-    main()
+    main(keys_msk, keys_spb, login, password)
