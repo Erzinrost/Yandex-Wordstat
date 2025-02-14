@@ -213,6 +213,7 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
     for key in region_actions.keys():
         try:
             region_actions[key]()
+            time.sleep(sleep_time)
             print(key)
         except Exception as e:
             region_actions_alternative[key]()
@@ -230,13 +231,9 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
 
 def main(keys_msk, keys_spb, login, password):
     browser = setup_browser()
-
-    # In case you want to login manually
-    try:
-        login_to_wordstat(browser, login, password)
-    except Exception as e:
-        pass
-
+    time.sleep(sleep_time)
+    login_to_wordstat(browser, login, password)
+    time.sleep(sleep_time)
     region_1 = "Moscow and region"
     # Define actions to chosee region
     msk_actions = {
