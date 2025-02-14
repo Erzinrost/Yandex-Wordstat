@@ -116,8 +116,15 @@ def setup_browser():
         )
 
     options = Options()
-    options.add_argument("--disable-gpu")
-    options.add_argument("--no-sandbox")
+    options.add_argument(r"--no-sandbox")
+    options.add_argument(r"--disable-dev-shm-usage")
+    options.add_argument(r"--disable-blink-features=AutomationControlled") # Avoid detection as bot
+    #options.add_argument(r"--user-data-dir=/Users/mac/Library/Application Support/Google/Chrome/Default") 
+    #options.add_argument(r'--profile-directory=Default')
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-notifications")
+    options.add_argument("--disable-Advertisement")
+    options.add_argument("--disable-popup-blocking") 
     options.add_argument("--headless")
 
     browser = get_driver()
