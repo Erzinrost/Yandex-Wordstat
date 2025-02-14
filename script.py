@@ -146,16 +146,11 @@ def login_to_wordstat(browser, login, password):
         print("Login entered")
         browser.find_element(By.CLASS_NAME, 'Textinput-Control').send_keys(password)
         time.sleep(sleep_time)
-        # Here you may have to manually enter additional password from push notification
-        try:
-            WebDriverWait(browser, default_wait).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "Textinput-Control"))
-            ).send_keys(Keys.ENTER)
-        except TimeoutException:
-            print("Manual login required.")
-            time.sleep(60) # time to enter creneditials
-    except TimeoutException:
-        print("Login failed. Please check credentials or website accessibility.")
+        WebDriverWait(browser, default_wait).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "Textinput-Control"))
+        ).send_keys(Keys.ENTER)
+    except Exception as e:
+        print("Login failed. Please check credentials or website accessibility.", e)
         browser.quit()
 
 def get_latest_file(directory, prefix="wordstat_dynamic"):
