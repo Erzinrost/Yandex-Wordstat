@@ -189,6 +189,12 @@ def login_to_wordstat(browser, login, password):
         browser.find_element(By.CLASS_NAME, 'Textinput-Control').send_keys(Keys.ENTER)
         time.sleep(sleep_time)
         print("Password entered")
+        try:
+            browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
+            EC.element_to_be_clickable((By.XPATH, """//*[@id="root"]/div/div[2]/div[2]/div/div/div[2]/div[3]/div/div/div/div[2]/div/ul/li/div/a/div/div/div[2]"""))))
+            print("Account selection confirmed")
+        except Exception as e:
+            pass
     except Exception as e:
         print("Login failed. Please check credentials or website accessibility.", e)
         browser.quit()
@@ -274,7 +280,7 @@ def main(keys_msk, keys_spb, login, password):
     browser = setup_browser()
     time.sleep(sleep_time)
     login_to_wordstat(browser, login, password)
-    
+
 
     page_source = browser.page_source
     print("Check")
