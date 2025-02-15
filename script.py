@@ -104,6 +104,38 @@ def close_banner(func):
     
     return wrapper
 
+def close_banner2(func):
+    """Decorator to close the popping banner before executing the function
+    which clicks through Wordstat webpage."""
+    @wraps(func)  # This preserves the original function's metadata (e.g., name, docstring)
+    def wrapper(browser, keywords, region_actions, region_actions_alternative, region_name):
+        """Wrapper function to close the banner if not already closed."""
+        # Different ways to click the close button
+        xpaths = [
+            """//*[@id="page"]/div/div[2]/div/div[3]/div[1]/button[1]""",
+            """//*[@id="page"]/div/div[2]/div/div[3]/div[1]/button[1]/span"""
+        ]
+        # Execute function if there is no banner
+        try:
+            time.sleep(sleep_time)
+            return func(browser, keywords, region_actions, region_actions_alternative, region_name)
+        # Otherwise try to close banner, which doesn't allow the function to run
+        except Exception as e:
+            for attempt, xpath in enumerate(xpaths, start=1):
+                try:
+                    WebDriverWait(browser, default_wait).until(
+                        EC.element_to_be_clickable((By.XPATH, xpath))
+                    ).click()
+                    print(f"Banner closed on attempt {attempt} with xpath: {xpath}")
+                    break  # Stop after successfully closing the banner
+                except Exception as e:
+                    print(f"Attempt {attempt} failed to close banner with xpath: {xpath}")
+            
+            # Execute the original function after closing the banner
+            return func(browser, keywords, region_actions, region_actions_alternative, region_name)
+    
+    return wrapper
+
 def setup_browser():
     """Setup Chrome browser for Selenium on Streamlit Cloud."""
     
@@ -211,13 +243,13 @@ def process_keyword(browser, keyword):
     except Exception as e:
         print("No data to download")
 
+@close_banner2
 @timer
 def process_region(browser, keywords, region_actions, region_actions_alternative, region_name):
 
     """Processes all keywords for a specified region."""
 
     print(f"Processing region: '{region_name}'")
-    browser.refresh()
 
     for key in region_actions.keys():
         try:
