@@ -233,23 +233,29 @@ def process_keyword(browser, keyword):
         print(f"Processing keyword: '{keyword}'")
         for key in actions.keys():
             actions[key]()
-            time.sleep(sleep_time)
 
-        # Download file
-        try:
-            WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME, "save-button__menu-item"))).click()         
-        except Exception as e:
-            WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME, "save-button__wrapper"))).click()
-            WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME, "save-button__menu-item"))).click()         
+        df = {
+            'Период': [],
+            'Число запросов': [],
+            'Доля от всех запросов, %': []
+        }
+        time.sleep(5)
+        elements = browser.find_elements(By.CLASS_NAME, 'table__content-cell')
+        for element in elements:
+            df['Период'].append(element.text)
+        elements = browser.find_elements(By.CLASS_NAME, 'table__level-cell')
+        for i, element in enumerate(elements, start=1):
+            if i % 2 != 0:
+                df['Число запросов'].append(element.text)
+            else:
+                df['Доля от всех запросов, %'].append(element.text)
+        df = pd.DataFrame(df)
 
-        # Load and return data
-        time.sleep(sleep_time)
-        return get_latest_file(directory)
+        return df
 
     except Exception as e:
         print("No data to download")
 
-@close_banner2
 @timer
 def process_region(browser, keywords, region_actions, region_actions_alternative, region_name):
 
@@ -280,7 +286,8 @@ def main(keys_msk, keys_spb, login, password):
     browser = setup_browser()
     time.sleep(sleep_time)
     login_to_wordstat(browser, login, password)
-
+    browser.refresh()
+    
 
     page_source = browser.page_source
     print("Check")
