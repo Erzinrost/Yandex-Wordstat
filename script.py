@@ -199,23 +199,6 @@ def login_to_wordstat(browser, login, password):
         print("Login failed. Please check credentials or website accessibility.", e)
         browser.quit()
 
-def get_latest_file(directory, prefix="wordstat_dynamic"):
-    """Uploads the latest file with the specified prefix from a directory
-    and then deletes that source file."""
-    files = [f for f in os.listdir(directory) if f.startswith(prefix)]
-    if not files:
-        print("No files found with prefix", prefix)
-        return None
-    files.sort(key=lambda x: os.path.getctime(os.path.join(directory, x)), reverse=True)
-    latest_file = os.path.join(directory, files[0])
-    try:
-        df = pd.read_csv(latest_file, delimiter=';')
-        os.remove(latest_file)
-        return df
-    except Exception as e:
-        print("Error reading or deleting the source file")
-        return None
-
 @close_banner
 @timer
 def process_keyword(browser, keyword):
@@ -250,6 +233,7 @@ def process_keyword(browser, keyword):
             else:
                 df['Доля от всех запросов, %'].append(element.text)
         df = pd.DataFrame(df)
+        print(df)
 
         return df
 
@@ -286,8 +270,6 @@ def main(keys_msk, keys_spb, login, password):
     browser = setup_browser()
     time.sleep(sleep_time)
     login_to_wordstat(browser, login, password)
-    browser.refresh()
-    
 
     page_source = browser.page_source
     print("Check")
@@ -352,7 +334,7 @@ def main(keys_msk, keys_spb, login, password):
         "Cancel selection": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/span/label/span[3]"""))).click(),
         "Select Northwestern Region": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/ol/li[1]/ol/li[2]/span/button"""))).click(),
         "Select Saint Petersburg and its region": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/ol/li[1]/ol/li[2]/ol/li[1]/span/label/span[3]"""))).click(),
-        "Confirm selection": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """/html/body/div[5]/div/div/div/div/div[2]/div/div[2]/div/div[4]/button/span"""))).click(),
+        "Confirm selection": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """/html/body/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[4]/button/span"""))).click(),
     }
     
     # Process region and save data locally
