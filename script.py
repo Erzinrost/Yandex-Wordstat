@@ -106,7 +106,7 @@ def close_banner(func):
 
 def setup_browser():
     """Setup Chrome browser for Selenium on Streamlit Cloud."""
-
+    
     def get_driver():
         return webdriver.Chrome(
             service=Service(
@@ -217,6 +217,7 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
     """Processes all keywords for a specified region."""
 
     print(f"Processing region: '{region_name}'")
+    browser.refresh()
 
     for key in region_actions.keys():
         try:
