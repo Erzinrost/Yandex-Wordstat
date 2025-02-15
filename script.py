@@ -250,6 +250,12 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
     """Processes all keywords for a specified region."""
 
     print(f"Processing region: '{region_name}'")
+    
+    page_source = browser.page_source
+    page_source.to_txt(f"{directory_processed}Wordstat_pagesource.csv")
+    with open(f"{directory_processed}Wordstat_pagesource.txt", "w", encoding="utf-8") as file:
+        file.write(page_source)
+    print(page_source)
 
     for key in region_actions.keys():
         try:
