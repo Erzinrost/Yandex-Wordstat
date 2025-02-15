@@ -274,20 +274,11 @@ def main(keys_msk, keys_spb, login, password):
     browser = setup_browser()
     time.sleep(sleep_time)
     login_to_wordstat(browser, login, password)
-
-
-    # import requests
-    # from bs4 import BeautifulSoup
-    # response = requests.get(login_url)
-    # soup = BeautifulSoup(response.content, 'html.parser')
-    # print(soup)
+    
 
     page_source = browser.page_source
     print("Check")
     print(page_source)
-    page_source.to_txt(f"{directory_processed}Wordstat_pagesource.csv")
-    with open(f"{directory_processed}Wordstat_pagesource.txt", "w", encoding="utf-8") as file:
-        file.write(page_source)
 
 
     time.sleep(sleep_time)
