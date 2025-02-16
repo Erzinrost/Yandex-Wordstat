@@ -57,6 +57,8 @@ Simply copy the following commands one after another in your terminal:
 1. Clone the repository:
    ```bash
    git clone https://github.com/Erzinrost/Yandex-Wordstat.git
+   ```
+   ```bash
    cd Yandex-Wordstat
    ```
 
