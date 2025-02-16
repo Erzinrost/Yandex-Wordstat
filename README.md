@@ -90,30 +90,20 @@ Since manually retrieving large keyword datasets is **time-consuming**, this pro
 Run the following commands in your terminal:
 
 ### **1️⃣ Clone the Repository**
-
-bash
-
-КопироватьРедактировать
-
-`git clone https://github.com/Erzinrost/Yandex-Wordstat.git
-cd Yandex-Wordstat`
-
+```
+git clone https://github.com/Erzinrost/Yandex-Wordstat.git
+```
+```
+cd Yandex-Wordstat
+```
 ### **2️⃣ Install Dependencies**
-
-bash
-
-КопироватьРедактировать
-
-`pip install -r requirements.txt`
-
+```
+pip install -r requirements.txt
+```
 ### **3️⃣ Run the Streamlit App**
-
-bash
-
-КопироватьРедактировать
-
-`streamlit run app.py`
-
+```
+streamlit run app.py
+```
 * * * * *
 
 📖 **Usage Instructions**
