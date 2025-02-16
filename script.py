@@ -7,11 +7,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import TimeoutException
 from functools import wraps
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-import subprocess
 from selenium.webdriver.chrome.options import Options
 import streamlit as st
 from webdriver_manager.core.os_manager import ChromeType
@@ -20,21 +18,13 @@ from webdriver_manager.core.os_manager import ChromeType
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # Constants
-directory = os.path.expanduser("~/downloads/")
-directory_processed = directory + "Wordstat/"
-os.makedirs(directory_processed, exist_ok=True)
+# directory = os.path.expanduser("~/downloads/") # in case you want to download each file instead of parsing from the source code
+# directory_processed = directory + "Wordstat/"
+# os.makedirs(directory_processed, exist_ok=True)
 login_url = "https://wordstat.yandex.ru/"
-default_wait = 10
-sleep_time = 2
+default_wait = 15
+sleep_time = 3
 global_inception_time = time.time()
-
-# # Upload keywords from a xlsx file in the Wordstat folder (create one in the default downloads folder)
-# keys_msk = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='MSK', header=None)
-# keys_msk = keys_msk.values.flatten().tolist()
-# print("Wordstat Keys MSK uploaded")
-# keys_spb = pd.read_excel(directory_processed + "Wordstat Keys.xlsx", sheet_name='SPB', header=None)
-# keys_spb = keys_spb.values.flatten().tolist()
-# print("Wordstat Keys SPB uploaded")
 
 def timer(func):
     """Calculate time taken by a function to execute and also time elapsed since the session's inception"""
@@ -76,7 +66,7 @@ def close_banner(func):
     """Decorator to close the popping banner before executing the function
     which clicks through Wordstat webpage."""
     @wraps(func)  # This preserves the original function's metadata (e.g., name, docstring)
-    def wrapper(browser, keyword):
+    def wrapper(browser, *args, **kwargs):
         """Wrapper function to close the banner if not already closed."""
         # Different ways to click the close button
         xpaths = [
@@ -86,7 +76,7 @@ def close_banner(func):
         # Execute function if there is no banner
         try:
             time.sleep(sleep_time)
-            return func(browser, keyword)
+            return func(browser, *args, **kwargs)
         # Otherwise try to close banner, which doesn't allow the function to run
         except Exception as e:
             for attempt, xpath in enumerate(xpaths, start=1):
@@ -94,73 +84,48 @@ def close_banner(func):
                     WebDriverWait(browser, default_wait).until(
                         EC.element_to_be_clickable((By.XPATH, xpath))
                     ).click()
-                    print(f"Banner closed on attempt {attempt} with xpath: {xpath}")
+                    print(f"Banner closed")
                     break  # Stop after successfully closing the banner
                 except Exception as e:
                     print(f"Attempt {attempt} failed to close banner with xpath: {xpath}")
             
             # Execute the original function after closing the banner
-            return func(browser, keyword)
+            return func(browser, *args, **kwargs)
     
     return wrapper
 
-def close_banner2(func):
-    """Decorator to close the popping banner before executing the function
-    which clicks through Wordstat webpage."""
-    @wraps(func)  # This preserves the original function's metadata (e.g., name, docstring)
-    def wrapper(browser, keywords, region_actions, region_actions_alternative, region_name):
-        """Wrapper function to close the banner if not already closed."""
-        # Different ways to click the close button
-        xpaths = [
-            """//*[@id="page"]/div/div[2]/div/div[3]/div[1]/button[1]""",
-            """//*[@id="page"]/div/div[2]/div/div[3]/div[1]/button[1]/span"""
-        ]
-        # Execute function if there is no banner
-        try:
-            time.sleep(sleep_time)
-            return func(browser, keywords, region_actions, region_actions_alternative, region_name)
-        # Otherwise try to close banner, which doesn't allow the function to run
-        except Exception as e:
-            for attempt, xpath in enumerate(xpaths, start=1):
-                try:
-                    WebDriverWait(browser, default_wait).until(
-                        EC.element_to_be_clickable((By.XPATH, xpath))
-                    ).click()
-                    print(f"Banner closed on attempt {attempt} with xpath: {xpath}")
-                    break  # Stop after successfully closing the banner
-                except Exception as e:
-                    print(f"Attempt {attempt} failed to close banner with xpath: {xpath}")
-            
-            # Execute the original function after closing the banner
-            return func(browser, keywords, region_actions, region_actions_alternative, region_name)
-    
-    return wrapper
-
-def setup_browser():
+def setup_browser(on_cloud):
     """Setup Chrome browser for Selenium on Streamlit Cloud."""
-    
-    def get_driver():
-        return webdriver.Chrome(
-            service=Service(
-                ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
-            ),
-            options=options,
-        )
 
     options = Options()
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
-    options.add_argument("--headless")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-blink-features=AutomationControlled") # Avoid detection as bot
-    #options.add_argument(r"--user-data-dir=/Users/mac/Library/Application Support/Google/Chrome/Default") 
-    #options.add_argument(r'--profile-directory=Default')
+    options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-extensions")
     options.add_argument("--disable-notifications")
     options.add_argument("--disable-Advertisement")
     options.add_argument("--disable-popup-blocking") 
+    #options.add_argument("--headless") # if no interaction Chrome window needed
+    #options.add_argument("--user-data-dir=/Users/mac/Library/Application Support/Google/Chrome/Default") # if you know path to your Chrome cookies
+    #options.add_argument("--profile-directory=Default") # use Chrome already logged in Yandex
 
-    browser = get_driver()
+    # Use Chromium if deploying app on Streamlit cloud
+    try:
+        try:
+            service_path = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+            browser = webdriver.Chrome(service=service_path, options=options)
+            print('App is deployed on cloud')
+        except: 
+            service_path = Service(ChromeDriverManager().install())
+            browser = webdriver.Chrome(service=service_path, options=options)
+            print('App is not deployed on cloud but locally')
+    # Or usual Chrome otherwise
+    except:
+        service_path = Service(ChromeDriverManager().install())
+        browser = webdriver.Chrome(service=service_path, options=options)
+        print('App is deployed locally')
+
 
     # Enter a word to start session
     time.sleep(sleep_time)
@@ -199,6 +164,23 @@ def login_to_wordstat(browser, login, password):
         print("Login failed. Please check credentials or website accessibility.", e)
         browser.quit()
 
+def get_latest_file(directory, prefix="wordstat_dynamic"):
+    """Uploads the latest file with the specified prefix from a directory
+    and then deletes that source file."""
+    files = [f for f in os.listdir(directory) if f.startswith(prefix)]
+    if not files:
+        print("No files found with prefix", prefix)
+        return None
+    files.sort(key=lambda x: os.path.getctime(os.path.join(directory, x)), reverse=True)
+    latest_file = os.path.join(directory, files[0])
+    try:
+        df = pd.read_csv(latest_file, delimiter=';')
+        os.remove(latest_file)
+        return df
+    except Exception as e:
+        print("Error reading or deleting the source file")
+        return None
+
 @close_banner
 @timer
 def process_keyword(browser, keyword):
@@ -222,31 +204,30 @@ def process_keyword(browser, keyword):
             'Число запросов': [],
             'Доля от всех запросов, %': []
         }
-        time.sleep(5)
+        time.sleep(10)
         elements = browser.find_elements(By.CLASS_NAME, 'table__content-cell')
         for element in elements:
             df['Период'].append(element.text)
         elements = browser.find_elements(By.CLASS_NAME, 'table__level-cell')
         for i, element in enumerate(elements, start=1):
             if i % 2 != 0:
-                df['Число запросов'].append(element.text)
+                df['Число запросов'].append(element.text.strip().replace(" ", ""))
             else:
-                df['Доля от всех запросов, %'].append(element.text)
+                df['Доля от всех запросов, %'].append(element.text.strip().replace(" ", ""))
         df = pd.DataFrame(df)
-        print(df)
 
         return df
 
     except Exception as e:
         print("No data to download")
 
+@close_banner
 @timer
 def process_region(browser, keywords, region_actions, region_actions_alternative, region_name):
 
     """Processes all keywords for a specified region."""
 
     print(f"Processing region: '{region_name}'")
-    print(browser.page_source)
 
     for key in region_actions.keys():
         try:
@@ -269,11 +250,15 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
     region_data['Регион'] = region_name
     return region_data
 
-def main(keys_msk, keys_spb, login, password):
-    browser = setup_browser()
+def main(keys_msk, keys_spb, login, password, on_cloud):
+    browser = setup_browser(on_cloud)
     time.sleep(sleep_time)
-    login_to_wordstat(browser, login, password)
-    #browser.refresh()
+
+    #Check if login manually or atomatically (i.e. using Chrome with cookies)
+    if login and password:
+        login_to_wordstat(browser, login, password)
+    else:
+        pass
 
     time.sleep(sleep_time)
     region_1 = "Moscow and region"
@@ -345,9 +330,10 @@ def main(keys_msk, keys_spb, login, password):
         print("No data for Saint Petersburg and region")
         final_data = pd.DataFrame()
 
-
+    # Download button
     st.download_button(
         label="Download data as CSV",
+        on_click=lambda: setattr(st.session_state, 'download_click', True),
         key="download_all",
         data=final_data.to_csv(sep=";", index=False).encode("utf-8-sig"),
         file_name="Wordstat.csv",

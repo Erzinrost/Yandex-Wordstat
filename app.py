@@ -55,7 +55,7 @@ if uploaded_file:
     df = process_keywords_from_xlsx(uploaded_file)
     
     if df:
-        st.success("File uploaded successfully!")
+        st.success("✅ File uploaded successfully!")
         st.subheader("📄 Detected Sheets")
         
         # Display available sheets
@@ -83,9 +83,28 @@ if uploaded_file:
         st.write(f"Detected {len(keys_spb)} keywords in SPB sheet.")
         
         logger = StreamlitLogger()
-        
-        if st.button("Start Processing"):
-            st.write("Running script...")
-            sys.stdout = logger  # Redirect print statements
-            main(keys_msk, keys_spb, login, password)  # Pass the login and password to your script
-            st.success("Processing completed!")
+
+        # Make the start script button inactive during script execution
+        if 'run_button' in st.session_state and st.session_state.run_button == True:
+            st.session_state.running = True
+        else:
+            st.session_state.running = False
+
+        if login and password and df:
+            # Checkbox widget
+            on_cloud = st.checkbox("Deployed on cloud?", disabled=st.session_state.running)
+            if st.button(label="Start Processing", disabled=st.session_state.running, key='run_button'):
+                st.write("Running script...")
+                sys.stdout = logger  # Redirect print statements
+                main(keys_msk, keys_spb, login, password, on_cloud)  # Pass the login and password to your script
+                st.success("🚀 Processing completed! Click ↖️ to get your data")
+        else:
+            st.subheader("⚠️ Upload keywords in required format and enter login and password before running the script")
+
+        # Initialize session state
+        if 'download_click' not in st.session_state:
+            st.session_state.download_click = False
+            # Check if download was clicked
+        if st.session_state.download_click:
+            # Perform actions or display information without resetting the app state
+            st.success("✅ Download complete!")
