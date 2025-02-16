@@ -31,13 +31,12 @@ Each sheet should have keywords listed in the first column without headers.
 
 ## Code Structure
 
-- **`script.py`**: Contains the core logic for setting up the Selenium browser, logging into Yandex Wordstat, processing keywords, and fetching data for specified regions.
+  - **`script.py`**: Contains the core logic for setting up the Selenium browser, logging into Yandex Wordstat, processing keywords, and fetching data for specified regions.
   - **Browser Setup**: Configures the Chrome browser with appropriate options for headless or cloud deployment.
   - **Login Functionality**: Handles the login process to Yandex Wordstat.
   - **Keyword Processing**: Processes keywords for specified regions and fetches data dynamically.
   - **Timer and Banner Handling**: Includes decorators for timing functions and handling pop-up banners on the Wordstat website.
-
-- **`app.py`**: The Streamlit-based web application that provides a user interface for uploading files, entering credentials, and starting the keyword processing.
+  - **`app.py`**: The Streamlit-based web application that provides a user interface for uploading files, entering credentials, and starting the keyword processing.
   - **File Upload**: Allows users to upload an Excel file with keywords.
   - **Real-Time Logging**: Displays the last 10 log messages in a scrollable window.
   - **Download Button**: Provides a button to download the processed data as a CSV file.
@@ -53,7 +52,7 @@ Each sheet should have keywords listed in the first column without headers.
 
 ## Installation
 
-Simply the the following commands one by one in your terminal:
+Simply copy the following commands one after another in your terminal:
 
 1. Clone the repository:
    ```bash
@@ -73,7 +72,7 @@ Simply the the following commands one by one in your terminal:
 
 ## Usage
 
-- Open the app in your browser (usually at http://localhost:8501).
+- Open terminal on your computer and enter the above commands.
 - Upload an Excel file with keywords in the MSK and SPB sheets.
 - Enter your Yandex login credentials.
 - Select whether the app is running locally or on the cloud.
@@ -83,5 +82,10 @@ Simply the the following commands one by one in your terminal:
 
 ## Contributing
 
-This project is not maintained on a constant basis, but rather used and upgraded when there is practical need.
+This project is not maintained on a constant basis, but rather used and upgraded when there is a practical need.
 Nonetheless, contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+
+## Vulnarabilities
+
+1. App may be vulnarable to any UI changes, since much automation depends on Xpaths, which are not as constant as other types of locators. Nonetheless, there are alternative locators in the code and it is quite straightforward to renew them within the `main` code as well.
+2. When loggign into Yandex Wordstat too often, addtional checks may be required - it is possible to pass them in manual mode, since Chrome window is not hidden during script execution locally.
