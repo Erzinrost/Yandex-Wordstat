@@ -113,8 +113,15 @@ def setup_browser(on_cloud):
     # Use Chromium if deploying app on Streamlit cloud
     if on_cloud:
         try:
-            service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
-            browser = webdriver.Chrome(service=service, options=options.add_argument("--headless"))
+            def get_driver():
+                options.add_argument("--headless")
+                return webdriver.Chrome(
+                    service=Service(
+                        ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+                    ),
+                    options=options,
+                )
+            browser = get_driver()
             print('App is deployed on cloud')
         except: 
             service = Service(ChromeDriverManager().install())
