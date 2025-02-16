@@ -246,6 +246,7 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
     """Processes all keywords for a specified region."""
 
     print(f"Processing region: '{region_name}'")
+    print(browser.page_source)
 
     for key in region_actions.keys():
         try:
