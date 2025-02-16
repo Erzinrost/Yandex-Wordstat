@@ -26,8 +26,6 @@ This tool simplifies keyword data extraction for **SEO specialists, marketers, a
 ✅ **Downloadable Results** – Processed data is saved as a **CSV file** for easy analysis.  
 ✅ **Cloud Deployment Support** – Can run on **Streamlit Cloud**, though local usage is recommended due to automation constraints.
 
----
-
 ## 🛠 How It Works
 
 1. **Upload an Excel file** (`.xlsx`) containing keywords:
@@ -79,28 +77,24 @@ pip install -r requirements.txt
 - **Webdriver Manager** (for ChromeDriver management)
 
 ## 🚀 Installation & Usage
------------------------
+Write the following commands one after another in your terminal:
 
 1.  **Clone the repository**:
-   bash
    ```
    git clone https://github.com/Erzinrost/Yandex-Wordstat.git
    ```
-   bash
    ```
    cd Yandex-Wordstat
    ```
 
 2.  **Install dependencies**:
 
-    bash
    ```
     pip install -r requirements.txt
    ```
 
 3.  **Run the application**:
 
-    bash
     ```
     streamlit run app.py
     ```
@@ -114,7 +108,6 @@ pip install -r requirements.txt
     -   Download the **CSV file** once processing is complete.
 
 ## ⚠️ Known Limitations & Vulnerabilities
---------------------------------------
 
 1.  **UI Changes on Yandex Wordstat**
 
@@ -132,7 +125,6 @@ pip install -r requirements.txt
 * * * * *
 
 🤝 Contributing
----------------
 
 This project is **updated as needed** rather than actively maintained.\
 However, **contributions are welcome**! Feel free to submit a **pull request** or report issues.
