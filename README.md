@@ -87,9 +87,9 @@ Since manually retrieving large keyword datasets is **time-consuming**, this pro
 📌 **Installation**
 -------------------
 
-Run the following commands in your terminal:
+Run the following commands one after another in your terminal:
 
-### **1️⃣ Clone the Repository**
+### **1️⃣ Clone the Repository and Set Directory**
 ```
 git clone https://github.com/Erzinrost/Yandex-Wordstat.git
 ```
@@ -154,6 +154,7 @@ Feel free to **open an issue** or **submit a pull request** for improvements or 
 * * * * *
 
 📌 **Notes:**
+-------------------
 
--   **Cloud deployment is not fully reliable** due to Yandex's security measures.
--   **Local execution is recommended** for **better control & stability**.
+-   **Cloud deployment is not fully reliable** due to Yandex's security measures and lack of manual control.
+-   **Local execution is thus recommended** with opened Chrone window automated by Selenium for **better control & stability**.
