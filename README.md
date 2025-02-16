@@ -115,7 +115,7 @@ Write the following commands one after another in your terminal:
 2.  **Frequent Logins May Trigger Verification**
 
     -   Repeated logins can prompt **CAPTCHA or push notifications**. Hence, on **local execution**, manual login intervention is possible.
-3.  **Cloud Deployment Risks**
+3.  **Cloud Deployment Limitations**
 
     -   No manual control in case of interface changes.
     -   CAPTCHA verification **cannot** be bypassed automatically.
