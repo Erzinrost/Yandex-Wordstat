@@ -111,17 +111,17 @@ def setup_browser(on_cloud):
     #options.add_argument("--profile-directory=Default") # use Chrome already logged in Yandex
 
     # Use Chromium if deploying app on Streamlit cloud
-    try:
+    if on_cloud:
         try:
             service_path = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
-            browser = webdriver.Chrome(service=service_path, options=options)
+            browser = webdriver.Chrome(service=service_path, options=options.add_argument("--headless"))
             print('App is deployed on cloud')
         except: 
             service_path = Service(ChromeDriverManager().install())
             browser = webdriver.Chrome(service=service_path, options=options)
             print('App is not deployed on cloud but locally')
     # Or usual Chrome otherwise
-    except:
+    else:
         service_path = Service(ChromeDriverManager().install())
         browser = webdriver.Chrome(service=service_path, options=options)
         print('App is deployed locally')
