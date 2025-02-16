@@ -100,6 +100,10 @@ def setup_browser(on_cloud):
     options = Options()
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-notifications")
+    options.add_argument("--disable-Advertisement")
+    options.add_argument("--disable-popup-blocking") 
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled") # Avoid detection as bot
     #options.add_argument("--headless") # if no interaction Chrome window needed
@@ -109,17 +113,17 @@ def setup_browser(on_cloud):
     # Use Chromium if deploying app on Streamlit cloud
     if on_cloud:
         try:
-            service_path = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
-            browser = webdriver.Chrome(service=service_path, options=options.add_argument("--headless"))
+            service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+            browser = webdriver.Chrome(service=service, options=options.add_argument("--headless"))
             print('App is deployed on cloud')
         except: 
-            service_path = Service(ChromeDriverManager().install())
-            browser = webdriver.Chrome(service=service_path, options=options)
+            service = Service(ChromeDriverManager().install())
+            browser = webdriver.Chrome(service=service, options=options)
             print('App is not deployed on cloud but locally')
     # Or usual Chrome otherwise
     else:
-        service_path = Service(ChromeDriverManager().install())
-        browser = webdriver.Chrome(service=service_path, options=options)
+        service = Service(ChromeDriverManager().install())
+        browser = webdriver.Chrome(service=service, options=options)
         print('App is deployed locally')
 
 
