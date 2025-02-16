@@ -111,12 +111,10 @@ Write the following commands one after another in your terminal:
 
 1.  **UI Changes on Yandex Wordstat**
 
-    -   The script relies on **XPaths** for automation, which can break if the UI changes.
-    -   Alternative locators exist in the code for easy updates.
+    -   The script relies on **XPaths** for automation, which can break if the UI changes. Hence, alternative locators may be added to the code for easy updates.
 2.  **Frequent Logins May Trigger Verification**
 
-    -   Repeated logins can prompt **CAPTCHA or push notifications**.
-    -   On **local execution**, manual login intervention is possible.
+    -   Repeated logins can prompt **CAPTCHA or push notifications**. Hence, on **local execution**, manual login intervention is possible.
 3.  **Cloud Deployment Risks**
 
     -   No manual control in case of interface changes.
