@@ -77,46 +77,38 @@ Install dependencies using:
 pip install -r requirements.txt
 ```
 
----
+### Dependencies:
+- **Streamlit** (for UI)
+- **Selenium** (for browser automation)
+- **Pandas** (for data processing)
+- **Openpyxl** (for Excel file handling)
+- **Webdriver Manager** (for ChromeDriver management)
 
-## Dependencies:
-
--   **Streamlit** (for UI)
--   **Selenium** (for browser automation)
--   **Pandas** (for data processing)
--   **Openpyxl** (for Excel file handling)
--   **Webdriver Manager** (for ChromeDriver management)
-
-
-🚀 Installation & Usage
+## 🚀 Installation & Usage
 -----------------------
 
 1.  **Clone the repository**:
-
-    ```bash
-git clone https://github.com/Erzinrost/Yandex-Wordstat.git
-```
-```bash
-cd Yandex-Wordstat
-```
+    bash
+   ```
+    git clone https://github.com/Erzinrost/Yandex-Wordstat.git
+    cd Yandex-Wordstat
+   ```
 
 2.  **Install dependencies**:
 
     bash
-
-    КопироватьРедактировать
-
-    `pip install -r requirements.txt`
+   ```
+    pip install -r requirements.txt
+   ```
 
 3.  **Run the application**:
 
     bash
+    ```
+    streamlit run app.py
+    ```
 
-    КопироватьРедактировать
-
-    `streamlit run app.py`
-
-4.  **Use the UI**:
+5.  **Use the UI**:
 
     -   Upload your Excel file (`.xlsx`).
     -   Enter Yandex login credentials.
@@ -124,9 +116,7 @@ cd Yandex-Wordstat
     -   Click **"Start Processing"**.
     -   Download the **CSV file** once processing is complete.
 
-* * * * *
-
-⚠️ Known Limitations & Vulnerabilities
+## ⚠️ Known Limitations & Vulnerabilities
 --------------------------------------
 
 1.  **UI Changes on Yandex Wordstat**
