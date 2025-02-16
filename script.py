@@ -101,11 +101,7 @@ def setup_browser(on_cloud):
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument("--disable-extensions")
-    options.add_argument("--disable-notifications")
-    options.add_argument("--disable-Advertisement")
-    options.add_argument("--disable-popup-blocking") 
+    options.add_argument("--disable-blink-features=AutomationControlled") # Avoid detection as bot
     #options.add_argument("--headless") # if no interaction Chrome window needed
     #options.add_argument("--user-data-dir=/Users/mac/Library/Application Support/Google/Chrome/Default") # if you know path to your Chrome cookies
     #options.add_argument("--profile-directory=Default") # use Chrome already logged in Yandex
@@ -189,7 +185,7 @@ def process_keyword(browser, keyword):
     actions = {
         "Clear input": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
             EC.element_to_be_clickable((By.XPATH, """//*[@id="page"]/div/div[2]/div/div[2]/span/span[2]""")))),
-        "Write keyword": lambda: WebDriverWait(browser, default_wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'textinput__control'))).send_keys(keyword),
+        "Write keyword": lambda: WebDriverWait(browser, default_wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'textinput__control'))).send_keys(keyword.strip()),
         "Enter keyword": lambda: WebDriverWait(browser, default_wait).until(EC.presence_of_element_located((By.CLASS_NAME, 'textinput__control'))).send_keys(Keys.ENTER)
     }
 
