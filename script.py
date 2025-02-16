@@ -264,17 +264,15 @@ def process_region(browser, keywords, region_actions, region_actions_alternative
             df['Ключ'] = key
             region_data = pd.concat([region_data, df], axis=0)
             print(f"{round((i + 1) / len(keywords) * 100, 2)}% completed for {region_name}")
+    
+    region_data['Регион'] = region_name
     return region_data
 
 def main(keys_msk, keys_spb, login, password):
     browser = setup_browser()
     time.sleep(sleep_time)
     login_to_wordstat(browser, login, password)
-
-    page_source = browser.page_source
-    print("Check")
-    print(page_source)
-
+    #browser.refresh()
 
     time.sleep(sleep_time)
     region_1 = "Moscow and region"
@@ -305,9 +303,10 @@ def main(keys_msk, keys_spb, login, password):
     if len(keys_msk) > 0:
         msk_data = process_region(browser, keys_msk, msk_actions, msk_actions_alternative, region_1)
         if not msk_data.empty:
-            msk_data.to_csv(f"{directory_processed}Wordstat_msk.csv", sep=";", index=False, encoding='utf-8-sig')
+            final_data = msk_data
     else:
         print("No data for Moscow and region")
+        final_data = pd.DataFrame()
 
     region_2 = "Saint Petersburg and region"
     # Define actions to chosee region
@@ -315,35 +314,44 @@ def main(keys_msk, keys_spb, login, password):
         "Select region": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
             EC.element_to_be_clickable((By.XPATH,"""//*[@id="page"]/div/div[2]/div/div[3]/div[1]/div/div[1]/div[3]/div/button/span[1]""")))),
         "Select all": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
-            EC.element_to_be_clickable((By.XPATH,"""//*[@id="123"]/ol/li/span/label/span[3]""")))),
+            EC.element_to_be_clickable((By.XPATH,"""//*[@id="123"]/ol/li/span/label/span[1]/span""")))),
         "Cancel selection": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
             EC.element_to_be_clickable((By.XPATH,"""//*[@id="123"]/ol/li/span/label/span[3]""")))),
         "Select Northwestern Region": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
             EC.element_to_be_clickable((By.XPATH,"""//*[@id="123"]/ol/li/ol/li[1]/ol/li[2]/span/button""")))),
         "Select Saint Petersburg and its region": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
             EC.element_to_be_clickable((By.XPATH,"""//*[@id="123"]/ol/li/ol/li[1]/ol/li[2]/ol/li[1]/span/label/span[3]""")))),
-        "Confirm selection": lambda: browser.execute_script("arguments[0].click();", WebDriverWait(browser, default_wait).until(
-            EC.element_to_be_clickable((By.CLASS_NAME,"""button2__text""")))),
+        "Confirm selection": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.CLASS_NAME,"""button2__text"""))).click(),
     }
 
     # Define alternative actions to chosee region 
     # in case the first path to click is not accessible
     spb_actions_alternative = {
         "Select region": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="page"]/div/div[2]/div/div[3]/div[1]/div/div[1]/div[3]/div/button/span[2]"""))).click(),
-        "Select all": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/span/label/span[3]"""))).click(),
+        "Select all": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/span/label/span[1]"""))).click(),
         "Cancel selection": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/span/label/span[3]"""))).click(),
         "Select Northwestern Region": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/ol/li[1]/ol/li[2]/span/button"""))).click(),
         "Select Saint Petersburg and its region": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """//*[@id="123"]/ol/li/ol/li[1]/ol/li[2]/ol/li[1]/span/label/span[3]"""))).click(),
-        "Confirm selection": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """/html/body/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[4]/button/span"""))).click(),
+        "Confirm selection": lambda: WebDriverWait(browser, default_wait).until(EC.element_to_be_clickable((By.XPATH, """/html/body/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[4]/button"""))).click(),
     }
     
     # Process region and save data locally
     if len(keys_spb) > 0:
         spb_data = process_region(browser, keys_spb, spb_actions, spb_actions_alternative, region_2)
         if not spb_data.empty:
-            spb_data.to_csv(f"{directory_processed}Wordstat_spb.csv", sep=";", index=False, encoding='utf-8-sig')
+            final_data = pd.concat([final_data, spb_data], axis=0)
     else:
         print("No data for Saint Petersburg and region")
+        final_data = pd.DataFrame()
+
+
+    st.download_button(
+        label="Download data as CSV",
+        key="download_all",
+        data=final_data.to_csv(sep=";", index=False).encode("utf-8-sig"),
+        file_name="Wordstat.csv",
+        mime="text/csv",
+        )
 
     print("Sessions are completed.")
     time.sleep(sleep_time)
