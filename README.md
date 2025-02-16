@@ -13,7 +13,7 @@ Wordstat provides data on the number of searches by Yandex users using various k
 - **Dynamic Region Selection**: The application supports dynamic region selection for Moscow and Saint Petersburg, including their respective surrounding regions.
 - **Real-Time Logging**: A custom logger displays the last 10 log messages in a scrollable window, providing real-time feedback on the script's progress.
 - **Downloadable Results**: The fetched keyword data is compiled into a CSV file, which users can download directly from the app.
-- **Cloud Deployment Ready**: The application is designed to work both locally and on cloud platforms like Streamlit Cloud, with options to handle different environments.
+- **Cloud Deployment Ready**: The application is designed to work both locally and on cloud platforms like Streamlit Cloud, with options to handle different environments. Nonetheless, due to technical constrains cloud deployment is prone to bugs and unpredicted behaviour, therefore local usage is recommended.
 
 ## How It Works
 
@@ -25,7 +25,7 @@ Each sheet should have keywords listed in the first column without headers.
 4. **Select Deployment Environment**: Users can specify whether the app is running locally or on the Streamlit Cloud. In the latter case deployment may be problematic because:
    - Yandex has strict control for their services automation and when loggign in additional checks (e.g. push codes, CAPTCHA) may be required;
    - No manual control over automation is possible in the case of interface changes or other unpredicted scenarios.
-5. **Check "Deployed on cloud" checkbox**: Check this one if you are trying to run the app on Streamlit Cloud - in that case Chromium instead of Chrome is used.
+5. **Check "Deployed on cloud" checkbox**: Check this one if you are trying to run the app on Streamlit Cloud - in that case Chromium instead of Chrome is used, and you have to [deploy it yourself](https://share.streamlit.io/).
 6. **Start Processing**: The application uses Selenium to automate the process of logging into Yandex Wordstat, selecting regions, and fetching keyword statistics. The latter is taken directly from the source code, but it is also possible to adjust the code slightly to download files for each keyword and then concatenate them together without the need for webscrapping.
 7. **Download Results**: Once the processing is complete, users can download the results as a CSV file.
 
@@ -53,6 +53,8 @@ Each sheet should have keywords listed in the first column without headers.
 
 ## Installation
 
+Simply the the following commands one by one in your terminal:
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/Erzinrost/Yandex-Wordstat.git
@@ -79,8 +81,7 @@ Each sheet should have keywords listed in the first column without headers.
 - Once processing is complete, download the results as a CSV file.
 
 
+## Contributing
 
-
-Contributing
 This project is not maintained on a constant basis, but rather used and upgraded when there is practical need.
 Nonetheless, contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
