@@ -153,7 +153,7 @@ Feel free to **open an issue** or **submit a pull request** for improvements or 
 
 * * * * *
 
-**📌 Notes:**
+📌 **Notes:**
 
 -   **Cloud deployment is not fully reliable** due to Yandex's security measures.
 -   **Local execution is recommended** for **better control & stability**.
