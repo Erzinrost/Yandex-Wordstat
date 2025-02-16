@@ -75,3 +75,77 @@ Install dependencies using:
 
 ```bash
 pip install -r requirements.txt
+```
+
+---
+
+## Dependencies:
+
+-   **Streamlit** (for UI)
+-   **Selenium** (for browser automation)
+-   **Pandas** (for data processing)
+-   **Openpyxl** (for Excel file handling)
+-   **Webdriver Manager** (for ChromeDriver management)
+
+
+🚀 Installation & Usage
+-----------------------
+
+1.  **Clone the repository**:
+
+    ```bash
+git clone https://github.com/Erzinrost/Yandex-Wordstat.git
+```
+```bash
+cd Yandex-Wordstat
+```
+
+2.  **Install dependencies**:
+
+    bash
+
+    КопироватьРедактировать
+
+    `pip install -r requirements.txt`
+
+3.  **Run the application**:
+
+    bash
+
+    КопироватьРедактировать
+
+    `streamlit run app.py`
+
+4.  **Use the UI**:
+
+    -   Upload your Excel file (`.xlsx`).
+    -   Enter Yandex login credentials.
+    -   Choose execution mode (local/cloud).
+    -   Click **"Start Processing"**.
+    -   Download the **CSV file** once processing is complete.
+
+* * * * *
+
+⚠️ Known Limitations & Vulnerabilities
+--------------------------------------
+
+1.  **UI Changes on Yandex Wordstat**
+
+    -   The script relies on **XPaths** for automation, which can break if the UI changes.
+    -   Alternative locators exist in the code for easy updates.
+2.  **Frequent Logins May Trigger Verification**
+
+    -   Repeated logins can prompt **CAPTCHA or push notifications**.
+    -   On **local execution**, manual login intervention is possible.
+3.  **Cloud Deployment Risks**
+
+    -   No manual control in case of interface changes.
+    -   CAPTCHA verification **cannot** be bypassed automatically.
+
+* * * * *
+
+🤝 Contributing
+---------------
+
+This project is **updated as needed** rather than actively maintained.\
+However, **contributions are welcome**! Feel free to submit a **pull request** or report issues.
