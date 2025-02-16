@@ -17,8 +17,6 @@ This tool simplifies keyword data extraction for **SEO specialists, marketers, a
 
 ⚠️ **Note:** Due to Yandex’s restrictions, automation may trigger additional verification steps (e.g., CAPTCHA, push codes). Local execution is recommended for manual intervention.
 
----
-
 ## ✨ Features
 
 ✅ **Excel File Upload** – Supports Excel files with keywords organized by region (`MSK` for Moscow, `SPB` for Saint Petersburg).  
@@ -50,8 +48,6 @@ This tool simplifies keyword data extraction for **SEO specialists, marketers, a
 5. **Download Results**:
    - Once processing is complete, download the keyword data as a **CSV file**.
 
----
-
 ## 📂 Code Structure
 
 ### `script.py`
@@ -64,8 +60,6 @@ This tool simplifies keyword data extraction for **SEO specialists, marketers, a
 - **Streamlit UI** – Handles **file uploads, credential input, and process execution**.
 - **Logging** – Displays the last **10 log messages** in real time.
 - **Download Functionality** – Provides a **CSV download button**.
-
----
 
 ## ⚙️ Requirements
 
@@ -88,10 +82,13 @@ pip install -r requirements.txt
 -----------------------
 
 1.  **Clone the repository**:
-    bash
+   bash
    ```
-    git clone https://github.com/Erzinrost/Yandex-Wordstat.git
-    cd Yandex-Wordstat
+   git clone https://github.com/Erzinrost/Yandex-Wordstat.git
+   ```
+   bash
+   ```
+   cd Yandex-Wordstat
    ```
 
 2.  **Install dependencies**:
