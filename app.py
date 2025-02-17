@@ -43,6 +43,12 @@ st.title("📂 Upload Excel File and Start Automated Keywords Download")
 # Create tabs for file upload and login credentials
 tab1, tab2 = st.tabs(["Upload File", "Login Credentials"])
 
+# Make buttons inactive during script execution
+if 'run_button' in st.session_state and st.session_state.run_button == True:
+    st.session_state.running = True
+else:
+    st.session_state.running = False
+
 with tab1:
     uploaded_file = st.file_uploader("Upload an XLSX file with keywords", type=["xlsx"])
 
@@ -63,7 +69,7 @@ if uploaded_file:
             st.write(f"**Sheet #{i}: {sheet}**")
         
         # Select a sheet to display contents
-        selected_sheet = st.selectbox("Select a sheet to view contents:", df.sheet_names)
+        selected_sheet = st.selectbox("Select a sheet to view contents:", df.sheet_names, disabled=st.session_state.running)
         if selected_sheet:
             sheet_data = df.parse(selected_sheet, header=None)
             sheet_data = sheet_data.rename(columns={0: 'Keyword'})  # Rename first column
@@ -83,12 +89,6 @@ if uploaded_file:
         st.write(f"Detected {len(keys_spb)} keywords in SPB sheet.")
         
         logger = StreamlitLogger()
-
-        # Make the start script button inactive during script execution
-        if 'run_button' in st.session_state and st.session_state.run_button == True:
-            st.session_state.running = True
-        else:
-            st.session_state.running = False
 
         if login and password and df:
             # Checkbox widget
