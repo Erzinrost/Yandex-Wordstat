@@ -102,7 +102,7 @@ pip install -r requirements.txt
 ```
 ### **3️⃣ Run the Streamlit App**
 ```
-streamlit run app.py
+python -m streamlit run app.py 
 ```
 * * * * *
 
