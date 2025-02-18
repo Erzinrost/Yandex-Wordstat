@@ -87,7 +87,7 @@ Since manually retrieving large keyword datasets is **time-consuming**, this pro
 📌 **Installation**
 -------------------
 
-Run the following commands one after another in your terminal:
+Run the following commands one after another in your terminal/shell/command line:
 
 ### **1️⃣ Clone the Repository and Set Directory**
 ```
